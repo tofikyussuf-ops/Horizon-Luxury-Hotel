@@ -28,7 +28,7 @@ export default function Page() {
         </h1>
         <Link
           href="/cabins"
-          className="bg-accent-500 px-8 py-6 text-primary-800 text-lg font-semibold hover:bg-accent-600 transition-all"
+          className="inline-block border border-accent-500 px-10 py-5 text-accent-500 text-sm uppercase tracking-[0.3em] font-medium hover:bg-accent-500 hover:text-primary-950 transition-all duration-500 ease-out"
         >
           Explore luxury cabins
         </Link>
