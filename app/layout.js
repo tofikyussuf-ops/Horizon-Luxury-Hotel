@@ -38,17 +38,20 @@ const josefin = Josefin_Sans({
   subsets: ["latin"],
   display: "swap",
 });
-
+// src/app/layout.js
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      {/* bg-primary-950: This sets the deep blue background for the whole app */}
       <body
-        className={`${josefin.className} bg-primary-950 text-primary-100 min-h-screen`}
+        className={`${josefin.className} bg-primary-950 text-primary-100 min-h-screen flex flex-col`}
       >
         <Header />
 
-        <main className="max-w-7xl mx-auto py-12 px-8">{children}</main>
+        {/* The wrapper that takes up all remaining space */}
+        <div className="flex-1 flex flex-col">
+          {/* The centered main container */}
+          <main className="max-w-7xl mx-auto w-full pt-32">{children}</main>
+        </div>
       </body>
     </html>
   );
