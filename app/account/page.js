@@ -2,8 +2,10 @@ export const metadata = {
   title: "Guest",
 };
 
-function page() {
-  return <div>my account</div>;
+export default function Page() {
+  return (
+    <h2 className="font-semibold text-2xl text-accent-400 mb-7">
+      Welcome, [Guest Name]
+    </h2>
+  );
 }
-
-export default page;
