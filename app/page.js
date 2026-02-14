@@ -5,7 +5,10 @@ export const metadata = {
   title: "Home",
 };
 // src/app/page.js
-// src/app/page.js
+// src/app/page.js git add .
+
+/* git commit -m "feat:implelemting the cabin detail ui"
+git push origin main */
 export default function Page() {
   return (
     /* -mt-32 pulls the content up to ignore the layout's padding

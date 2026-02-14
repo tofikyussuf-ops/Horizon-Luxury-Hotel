@@ -3,10 +3,7 @@ import { EyeSlashIcon, MapPinIcon, UsersIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
 
 export default async function Page({ params }) {
-  // 1. Await params (Required in Next.js 15)
   const { cabinId } = await params;
-
-  // 2. Fetch data
   const cabin = await getCabin(cabinId);
 
   if (!cabin) return null;
@@ -14,51 +11,50 @@ export default async function Page({ params }) {
   const { name, maxCapacity, image, description } = cabin;
 
   return (
-    <div className="max-w-6xl mx-auto mt-8 px-4 pb-20 md:pb-32">
-      {/* Container Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-[3fr_4fr] gap-12 lg:gap-20 border border-primary-800 py-6 md:py-12 px-6 md:px-14 mb-24 items-center">
-        {/* IMAGE SECTION: Modern Editorial Style */}
-        <div className="relative aspect-square lg:scale-[1.15] lg:-translate-x-3">
+    <div className="max-w-6xl mx-auto mt-8 px-4 pb-12">
+      {/* Container Card: Reduced padding and tightened gap */}
+      <div className="grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-8 lg:gap-16 border border-primary-800 py-4 px-6 md:px-10 mb-16 items-start">
+        {/* IMAGE SECTION: Swapped aspect-square for aspect-video for a wider look */}
+        <div className="relative aspect-video lg:aspect-square w-full overflow-hidden">
           <Image
             src={image}
             fill
-            className="object-cover border border-primary-800 shadow-2xl"
+            className="object-cover border border-primary-800"
             alt={`Cabin ${name}`}
             priority
           />
         </div>
 
-        {/* CONTENT SECTION */}
-        <div className="relative">
-          {/* Overlapping Heading: Desktop only pop-out */}
-          <h3 className="text-accent-100 font-black text-4xl md:text-6xl lg:text-7xl mb-6 lg:translate-x-[-15%] bg-primary-950 lg:p-6 lg:pb-1 lg:w-[120%] z-10 relative leading-tight">
+        {/* CONTENT SECTION: Tighter spacing */}
+        <div className="py-4">
+          <h3 className="text-accent-100 font-black text-4xl md:text-5xl lg:text-6xl mb-4 leading-tight">
             Cabin {name}
           </h3>
 
-          <p className="text-base md:text-lg text-primary-300 mb-10 leading-relaxed italic">
+          <p className="text-base text-primary-300 mb-8 leading-relaxed">
             {description}
           </p>
 
-          <ul className="flex flex-col gap-5 mb-7">
-            <li className="flex gap-4 items-center group">
-              <UsersIcon className="h-6 w-6 text-primary-600 transition-colors group-hover:text-accent-500" />
-              <span className="text-base md:text-lg">
+          <ul className="flex flex-col gap-3 mb-4">
+            <li className="flex gap-3 items-center">
+              <UsersIcon className="h-5 w-5 text-primary-600" />
+              <span className="text-base">
                 For up to <span className="font-bold">{maxCapacity}</span>{" "}
                 guests
               </span>
             </li>
-            <li className="flex gap-4 items-center group">
-              <MapPinIcon className="h-6 w-6 text-primary-600 transition-colors group-hover:text-accent-500" />
-              <span className="text-base md:text-lg">
-                Located in the heart of the{" "}
+            <li className="flex gap-3 items-center">
+              <MapPinIcon className="h-5 w-5 text-primary-600" />
+              <span className="text-base">
+                Heart of the{" "}
                 <span className="font-bold text-accent-400">Dolomites</span>
               </span>
             </li>
-            <li className="flex gap-4 items-center group">
-              <EyeSlashIcon className="h-6 w-6 text-primary-600 transition-colors group-hover:text-accent-500" />
-              <span className="text-base md:text-lg">
+            <li className="flex gap-3 items-center">
+              <EyeSlashIcon className="h-5 w-5 text-primary-600" />
+              <span className="text-base">
                 Privacy{" "}
-                <span className="font-bold uppercase tracking-widest text-sm">
+                <span className="font-bold uppercase tracking-widest text-xs">
                   100% guaranteed
                 </span>
               </span>
@@ -67,14 +63,12 @@ export default async function Page({ params }) {
         </div>
       </div>
 
-      {/* Footer Heading */}
-      <div className="border-t border-primary-900 pt-16">
-        <h2 className="text-3xl md:text-5xl font-semibold text-center text-accent-400">
+      {/* Action Section */}
+      <div className="border-t border-primary-900 pt-10">
+        <h2 className="text-2xl md:text-4xl font-semibold text-center text-accent-400 mb-8">
           Reserve today. Pay on arrival.
         </h2>
-        <div className="flex justify-center">
-          {/* Placeholder for future Calendar/Form */}
-        </div>
+        {/* Booking components will go here */}
       </div>
     </div>
   );

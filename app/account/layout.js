@@ -1,14 +1,22 @@
+// app/account/layout.js
 import SideNavigation from "@/app/_components/SideNavigation";
-
+import Spinner from "@/app/_components/Spinner";
+import { Suspense } from "react";
+// app/account/layout.js
+// app/account/layout.js
+// app/account/layout.js
 export default function Layout({ children }) {
   return (
-    // grid-cols-[16rem_1fr] gives the sidebar a fixed width
-    // and lets the content take the rest of the space
-    <div className="grid grid-cols-[16rem_1fr] h-full gap-12">
+    /* We use overflow-hidden on the parent to lock the screen, 
+       then allow the content area to scroll independently. */
+    <div className="grid md:grid-cols-[16rem_1fr] h-[calc(100vh-5rem)] gap-12 overflow-hidden">
+      {/* Sidebar won't scroll, it just sits in its cell */}
       <SideNavigation />
 
-      {/* The main content area where your profile form will live */}
-      <div className="py-1">{children}</div>
+      {/* Only this area will scroll if the content is long */}
+      <div className="overflow-y-auto py-1 pt-16 md:pt-1 px-4">
+        <Suspense fallback={<Spinner />}>{children}</Suspense>
+      </div>
     </div>
   );
 }

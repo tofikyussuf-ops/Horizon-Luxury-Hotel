@@ -1,11 +1,12 @@
-import Spinner from "../_components/Spinner";
-function loading() {
+import Spinner from "@/app/_components/Spinner";
+
+export default function Loading() {
   return (
-    <div>
+    <div className="flex flex-col items-center justify-center h-[70vh] gap-6">
       <Spinner />
-      <h1> cabins Data Loading ...</h1>
+      <p className="text-xl text-primary-200 font-medium tracking-wide">
+        Loading cabin data...
+      </p>
     </div>
   );
 }
-
-export default loading;
