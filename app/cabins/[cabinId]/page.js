@@ -1,6 +1,34 @@
-import { getCabin } from "@/app/_lib/data-service";
+import { getCabin, getCabins } from "@/app/_lib/data-service";
 import { EyeSlashIcon, MapPinIcon, UsersIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
+
+// 1. Dynamic Metadata Function
+export async function generateMetadata({ params }) {
+  // Await params if you are using Next.js 15+
+  const { cabinId } = await params;
+  const cabin = await getCabin(cabinId);
+
+  // If cabin doesn't exist, Next.js handles it via not-found.js
+  if (!cabin) return { title: "Cabin Not Found" };
+
+  return {
+    title: `Cabin ${cabin.name}`,
+    description: `Discover the luxury and comfort of ${cabin.name}, located in the heart of the woods.`,
+    // You can even add dynamic OpenGraph images here
+  };
+}
+
+export async function generateStaticParams() {
+  const cabins = await getCabins();
+
+  // Next.js expects an array of objects: [{ cabinId: '1' }, { cabinId: '2' }, ...]
+
+  const params = cabins.map((cabin) => ({
+    cabinId: String(cabin.id),
+  }));
+
+  return params;
+}
 
 export default async function Page({ params }) {
   const { cabinId } = await params;
