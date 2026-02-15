@@ -1,9 +1,8 @@
-import DateSelector from "@/app/_components/DateSelector";
-import ReservationForm from "@/app/_components/ReservationForm";
-import TextExpander from "@/app/_components/TextExpander";
+import Cabin from "@/app/_components/Cabin";
+import Reservation from "@/app/_components/Reservations";
 import { getCabin, getCabins } from "@/app/_lib/data-service";
-import { EyeSlashIcon, MapPinIcon, UsersIcon } from "@heroicons/react/24/solid";
-import Image from "next/image";
+import { Suspense } from "react";
+import Spinner from "@/app/_components/Spinner";
 // 1. Dynamic Metadata Function
 
 export async function generateMetadata({ params }) {
@@ -36,70 +35,18 @@ export default async function Page({ params }) {
 
   if (!cabin) return null;
 
-  const { name, maxCapacity, image, description } = cabin;
-
   return (
     <div className="max-w-6xl mx-auto mt-8 px-4 pb-12">
-      {/* Container Card: Reduced padding and tightened gap */}
-      <div className="grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-8 lg:gap-16 border border-primary-800 py-4 px-6 md:px-10 mb-16 items-start">
-        <div className="relative aspect-video lg:aspect-square w-full overflow-hidden">
-          <Image
-            src={image}
-            fill
-            className="object-cover border border-primary-800"
-            alt={`Cabin ${name}`}
-            priority
-          />
-        </div>
-
-        {/* CONTENT SECTION: Tighter spacing */}
-        <div className="py-4">
-          <h3 className="text-accent-100 font-black text-4xl md:text-5xl lg:text-6xl mb-4 leading-tight">
-            Cabin {name}
-          </h3>
-
-          <p className="text-base text-primary-300 mb-8 leading-relaxed">
-            <TextExpander>{description}</TextExpander>
-          </p>
-
-          <ul className="flex flex-col gap-3 mb-4">
-            <li className="flex gap-3 items-center">
-              <UsersIcon className="h-5 w-5 text-primary-600" />
-              <span className="text-base">
-                For up to <span className="font-bold">{maxCapacity}</span>{" "}
-                guests
-              </span>
-            </li>
-            <li className="flex gap-3 items-center">
-              <MapPinIcon className="h-5 w-5 text-primary-600" />
-              <span className="text-base">
-                Heart of the{" "}
-                <span className="font-bold text-accent-400">Dolomites</span>
-              </span>
-            </li>
-            <li className="flex gap-3 items-center">
-              <EyeSlashIcon className="h-5 w-5 text-primary-600" />
-              <span className="text-base">
-                Privacy{" "}
-                <span className="font-bold uppercase tracking-widest text-xs">
-                  100% guaranteed
-                </span>
-              </span>
-            </li>
-          </ul>
-        </div>
-      </div>
+      <Cabin cabin={cabin} />
 
       {/* Action Section */}
       <div className="border-t border-primary-900 pt-10">
         <h2 className="text-2xl md:text-4xl font-semibold text-center text-accent-400 mb-8">
-          Reserve today. Pay on arrival.
+          Reserve {cabin.name} today. Pay on arrival.
         </h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20 items-start">
-          <DateSelector />
-          <ReservationForm />
-        </div>
+        <Suspense fallback={<Spinner />}>
+          <Reservation cabin={cabin} />
+        </Suspense>
       </div>
     </div>
   );
