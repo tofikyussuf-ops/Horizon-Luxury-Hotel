@@ -1,7 +1,7 @@
+import TextExpander from "@/app/_components/TextExpander";
 import { getCabin, getCabins } from "@/app/_lib/data-service";
 import { EyeSlashIcon, MapPinIcon, UsersIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
-
 // 1. Dynamic Metadata Function
 export async function generateMetadata({ params }) {
   // Await params if you are using Next.js 15+
@@ -60,7 +60,7 @@ export default async function Page({ params }) {
           </h3>
 
           <p className="text-base text-primary-300 mb-8 leading-relaxed">
-            {description}
+            <TextExpander>{description}</TextExpander>
           </p>
 
           <ul className="flex flex-col gap-3 mb-4">
