@@ -1,14 +1,16 @@
+import DateSelector from "@/app/_components/DateSelector";
+import ReservationForm from "@/app/_components/ReservationForm";
 import TextExpander from "@/app/_components/TextExpander";
 import { getCabin, getCabins } from "@/app/_lib/data-service";
 import { EyeSlashIcon, MapPinIcon, UsersIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
 // 1. Dynamic Metadata Function
+
 export async function generateMetadata({ params }) {
   // Await params if you are using Next.js 15+
   const { cabinId } = await params;
   const cabin = await getCabin(cabinId);
 
-  // If cabin doesn't exist, Next.js handles it via not-found.js
   if (!cabin) return { title: "Cabin Not Found" };
 
   return {
@@ -20,8 +22,6 @@ export async function generateMetadata({ params }) {
 
 export async function generateStaticParams() {
   const cabins = await getCabins();
-
-  // Next.js expects an array of objects: [{ cabinId: '1' }, { cabinId: '2' }, ...]
 
   const params = cabins.map((cabin) => ({
     cabinId: String(cabin.id),
@@ -42,7 +42,6 @@ export default async function Page({ params }) {
     <div className="max-w-6xl mx-auto mt-8 px-4 pb-12">
       {/* Container Card: Reduced padding and tightened gap */}
       <div className="grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-8 lg:gap-16 border border-primary-800 py-4 px-6 md:px-10 mb-16 items-start">
-        {/* IMAGE SECTION: Swapped aspect-square for aspect-video for a wider look */}
         <div className="relative aspect-video lg:aspect-square w-full overflow-hidden">
           <Image
             src={image}
@@ -96,7 +95,11 @@ export default async function Page({ params }) {
         <h2 className="text-2xl md:text-4xl font-semibold text-center text-accent-400 mb-8">
           Reserve today. Pay on arrival.
         </h2>
-        {/* Booking components will go here */}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20 items-start">
+          <DateSelector />
+          <ReservationForm />
+        </div>
       </div>
     </div>
   );

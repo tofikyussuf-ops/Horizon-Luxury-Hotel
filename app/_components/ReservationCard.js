@@ -13,7 +13,7 @@ function CabinCard({ cabin }) {
 
   return (
     // Max-width added to prevent stretching on large screens
-    <div className="flex flex-col md:flex-row border-primary-800 border max-w-4xl mx-auto overflow-hidden">
+    <div className="flex flex-col md:flex-row bg-primary-900 border border-primary-800 max-w-4xl mx-auto overflow-hidden">
       {/* Image Container: Fixed aspect ratio for consistency */}
       <div className="relative h-64 md:h-auto md:flex-1">
         <Image

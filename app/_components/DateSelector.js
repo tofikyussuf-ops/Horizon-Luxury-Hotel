@@ -1,33 +1,22 @@
-import { isWithinInterval } from "date-fns";
+"use client";
 import { DayPicker } from "react-day-picker";
-import "react-day-picker/dist/style.css";
-
-function isAlreadyBooked(range, datesArr) {
-  return (
-    range.from &&
-    range.to &&
-    datesArr.some((date) =>
-      isWithinInterval(date, { start: range.from, end: range.to })
-    )
-  );
-}
+import "react-day-picker/style.css"; // Note: ensure you use the version 9 style path if updated
 
 function DateSelector() {
-  // CHANGE
   const regularPrice = 23;
   const discount = 23;
   const numNights = 23;
   const cabinPrice = 23;
   const range = { from: null, to: null };
 
-  // SETTINGS
   const minBookingLength = 1;
   const maxBookingLength = 23;
 
   return (
-    <div className="flex flex-col justify-between">
+    <div className="flex flex-col border border-primary-800">
+      {/* Reduced padding and centered single month */}
       <DayPicker
-        className="pt-12 place-self-center"
+        className="pt-4 place-self-center pb-4"
         mode="range"
         min={minBookingLength + 1}
         max={maxBookingLength}
@@ -35,45 +24,49 @@ function DateSelector() {
         fromDate={new Date()}
         toYear={new Date().getFullYear() + 5}
         captionLayout="dropdown"
-        numberOfMonths={2}
+        numberOfMonths={1} // Changed to 1 for minimalist look
       />
 
-      <div className="flex items-center justify-between px-8 bg-accent-500 text-primary-800 h-[72px]">
-        <div className="flex items-baseline gap-6">
+      {/* Sleeker Price Bar */}
+      <div className="flex items-center justify-between px-6 bg-accent-500 text-primary-800 h-[60px]">
+        <div className="flex items-baseline gap-4">
           <p className="flex gap-2 items-baseline">
             {discount > 0 ? (
               <>
-                <span className="text-2xl">${regularPrice - discount}</span>
-                <span className="line-through font-semibold text-primary-700">
+                <span className="text-xl font-semibold">
+                  ${regularPrice - discount}
+                </span>
+                <span className="line-through text-sm font-medium text-primary-700">
                   ${regularPrice}
                 </span>
               </>
             ) : (
-              <span className="text-2xl">${regularPrice}</span>
+              <span className="text-xl font-semibold">${regularPrice}</span>
             )}
-            <span className="">/night</span>
+            <span className="text-xs uppercase font-bold">/night</span>
           </p>
+
           {numNights ? (
-            <>
-              <p className="bg-accent-600 px-3 py-2 text-2xl">
+            <div className="flex items-baseline gap-4 border-l border-primary-700 ml-4 pl-4">
+              <p className="text-lg">
                 <span>&times;</span> <span>{numNights}</span>
               </p>
               <p>
-                <span className="text-lg font-bold uppercase">Total</span>{" "}
-                <span className="text-2xl font-semibold">${cabinPrice}</span>
+                <span className="text-xs font-bold uppercase">Total</span>{" "}
+                <span className="text-xl font-semibold">${cabinPrice}</span>
               </p>
-            </>
+            </div>
           ) : null}
         </div>
 
-        {range.from || range.to ? (
+        {(range.from || range.to) && (
           <button
-            className="border border-primary-800 py-2 px-4 text-sm font-semibold"
+            className="border border-primary-800 py-1 px-3 text-xs font-semibold uppercase tracking-wide"
             onClick={() => resetRange()}
           >
             Clear
           </button>
-        ) : null}
+        )}
       </div>
     </div>
   );
