@@ -1,13 +1,19 @@
 "use client";
+
+import {
+  differenceInDays,
+  isPast,
+  isSameDay,
+  isWithinInterval,
+} from "date-fns";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
-import { isPast, isSameDay, isWithinInterval } from "date-fns";
+import { useReservation } from "./ReservationContext";
 
-// Helper function to check if the selected range hits any booked dates
 function isAlreadyBooked(range, datesArr) {
   return (
-    range.from &&
-    range.to &&
+    range?.from &&
+    range?.to &&
     datesArr.some((date) =>
       isWithinInterval(date, { start: range.from, end: range.to }),
     )
@@ -15,33 +21,51 @@ function isAlreadyBooked(range, datesArr) {
 }
 
 function DateSelector({ settings, bookedDates, cabin }) {
-  // 1. DATA FROM PROPS
+  const { range, setRange, resetRange } = useReservation();
+
+  // 1. Check if the selection is valid before trying to display it
+  // We only reset the view if they actually tried to book OVER a reserved date
+  const displayRange = isAlreadyBooked(range, bookedDates)
+    ? { from: undefined, to: undefined }
+    : range;
+
   const { regularPrice, discount } = cabin;
   const { minBookingLength, maxBookingLength } = settings;
 
-  // 2. STATE (We'll connect this to Context later)
-  const range = { from: null, to: null };
-  const numNights = 0; // Calculated logic will go here
+  // 2. Calculate number of nights safely
+  // We use range here to ensure we calculate based on the actual selection
+  const numNights =
+    range?.from && range?.to ? differenceInDays(range.to, range.from) : 0;
   const cabinPrice = numNights * (regularPrice - discount);
-
+  console.log(range);
   return (
     <div className="flex flex-col border border-primary-800">
       <DayPicker
         className="pt-4 place-self-center pb-4"
         mode="range"
-        onSelect={(range) => console.log(range)} // Placeholder for now
-        // 3. DISABLE LOGIC
+        selected={range}
+        onSelect={setRange}
+        // 1. THIS KEEPS THEM VISIBLE BUT DISABLED
         disabled={(curDate) =>
           isPast(curDate) ||
           bookedDates.some((date) => isSameDay(date, curDate))
         }
-        min={minBookingLength + 1}
+        // 2. CONSTRAINTS
+        min={1}
         max={maxBookingLength}
-        fromMonth={new Date()}
-        fromDate={new Date()}
-        toYear={new Date().getFullYear() + 5}
+        // 3. NAVIGATION (Ensures the user can't go back, but days remain visible)
+        startMonth={new Date()}
         captionLayout="dropdown"
         numberOfMonths={1}
+        // 4. STYLE OVERRIDES (Ensures disabled dates look "dead")
+        modifiersClassNames={{
+          disabled: "opacity-25 cursor-not-allowed",
+          selected: "bg-accent-500 text-primary-800 hover:bg-accent-600",
+          range_start: "rounded-l-full",
+          range_end: "rounded-r-full",
+          range_middle: "bg-accent-100 text-primary-900", // The days in between
+          today: "text-accent-500 font-bold underline", // Current day marker
+        }}
       />
 
       <div className="flex items-center justify-between px-6 bg-accent-500 text-primary-800 h-[60px]">
@@ -75,12 +99,10 @@ function DateSelector({ settings, bookedDates, cabin }) {
           ) : null}
         </div>
 
-        {(range.from || range.to) && (
+        {(range?.from || range?.to) && (
           <button
             className="border border-primary-800 py-1 px-3 text-xs font-semibold uppercase tracking-wide"
-            onClick={() => {
-              /* reset logic */
-            }}
+            onClick={resetRange}
           >
             Clear
           </button>

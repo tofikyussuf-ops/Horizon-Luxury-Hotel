@@ -1,5 +1,6 @@
 import { Josefin_Sans } from "next/font/google"; // Import the font
 import Header from "./_components/Header";
+import { ReservationProvider } from "./_components/ReservationContext";
 import "./_style/globals.css";
 export const metadata = {
   title: {
@@ -49,8 +50,9 @@ export default function RootLayout({ children }) {
 
         {/* The wrapper that takes up all remaining space */}
         <div className="flex-1 flex flex-col">
-          {/* The centered main container */}
-          <main className="max-w-7xl mx-auto w-full pt-32">{children}</main>
+          <ReservationProvider>
+            <main className="max-w-7xl mx-auto w-full pt-32">{children}</main>
+          </ReservationProvider>
         </div>
       </body>
     </html>

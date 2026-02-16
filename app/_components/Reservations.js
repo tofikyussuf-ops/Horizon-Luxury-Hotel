@@ -3,7 +3,6 @@ import DateSelector from "./DateSelector";
 import ReservationForm from "./ReservationForm";
 
 async function Reservation({ cabin }) {
-  // Fetching both in parallel for maximum speed
   const [settings, bookedDates] = await Promise.all([
     getSettings(),
     getBookedDatesByCabinId(cabin.id),

@@ -1,5 +1,6 @@
 import { getCabins } from "../_lib/data-service";
 import CabinCard from "./CabinCard";
+import ReservationReminder from "./ReservationReminder";
 
 async function CabinList({ filter }) {
   const cabins = await getCabins();
@@ -27,6 +28,7 @@ async function CabinList({ filter }) {
       {displayedCabins.map((cabin) => (
         <CabinCard cabin={cabin} key={cabin.id} />
       ))}
+      <ReservationReminder />
     </div>
   );
 }
