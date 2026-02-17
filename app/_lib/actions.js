@@ -29,6 +29,22 @@ export async function updateGuest(formData) {
   // This clears the cache so the page shows the new data immediately
   revalidatePath("/account/profile");
 }
+
+export async function deleteBooking(bookingId) {
+  const session = await auth();
+  if (!session) throw new Error("You must be logged in");
+
+  // Safety: Ensure the booking being deleted belongs to the logged-in guest
+  const { error } = await supabase
+    .from("bookings")
+    .delete()
+    .eq("id", bookingId)
+    .eq("guestId", session.user.guestId); // Double security check
+
+  if (error) throw new Error("Booking could not be deleted");
+
+  revalidatePath("/account/reservations");
+}
 export async function signInAction() {
   await signIn("google", { redirectTo: "/account" });
 }
