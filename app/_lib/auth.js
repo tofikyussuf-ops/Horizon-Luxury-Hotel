@@ -1,5 +1,6 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
+import { createGuest, getGuest } from "./data-service";
 
 const authConfig = {
   providers: [
@@ -8,16 +9,36 @@ const authConfig = {
       clientSecret: process.env.AUTH_GOOGLE_SECRET,
     }),
   ],
-  // 1. Tell Auth.js where your custom login page is
-  pages: {
-    signIn: "/login",
-  },
   callbacks: {
-    // 2. This is the "Security Guard" logic for Middleware
-    authorized({ auth, request }) {
-      // Returns true (authorized) if there is a user, false if not
+    authorized({ auth }) {
       return !!auth?.user;
     },
+    // This runs when a user tries to sign in
+    async signIn({ user, account, profile }) {
+      try {
+        const existingGuest = await getGuest(user.email);
+
+        if (!existingGuest) {
+          await createGuest({
+            email: user.email,
+            fullName: user.name,
+          });
+        }
+
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    // Add the guestId to the session object
+    async session({ session, user }) {
+      const guest = await getGuest(session.user.email);
+      session.user.guestId = guest.id;
+      return session;
+    },
+  },
+  pages: {
+    signIn: "/login",
   },
 };
 
