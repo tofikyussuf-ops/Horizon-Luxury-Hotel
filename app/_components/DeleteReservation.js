@@ -2,15 +2,16 @@
 
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { useTransition } from "react";
+import { deleteBooking } from "../_lib/actions";
 import SpinnerMini from "./SpinnerMini";
 
-function DeleteReservation({ bookingId, onDelete }) {
+function DeleteReservation({ bookingId }) {
   const [isPending, startTransition] = useTransition();
 
   function handleDelete() {
     if (confirm("Are you sure you want to delete this reservation?"))
       // We wrap the action in startTransition to track the loading state
-      startTransition(() => onDelete(bookingId));
+      startTransition(() => deleteBooking(bookingId));
   }
 
   return (
