@@ -1,70 +1,95 @@
-import { UsersIcon } from "@heroicons/react/24/solid";
-import { formatDistance, parseISO } from "date-fns";
+import { PencilSquareIcon } from "@heroicons/react/24/solid";
+import { format, formatDistance, isPast, isToday, parseISO } from "date-fns";
 import Image from "next/image";
 import Link from "next/link";
+import DeleteReservation from "./DeleteReservation";
 
 export const formatDistanceFromNow = (dateStr) =>
   formatDistance(parseISO(dateStr), new Date(), {
     addSuffix: true,
   }).replace("about ", "");
 
-function CabinCard({ cabin }) {
-  const { id, name, maxCapacity, regularPrice, discount, image } = cabin;
+function ReservationCard({ booking, onDelete }) {
+  const {
+    id,
+    guestId,
+    startDate,
+    endDate,
+    numNights,
+    totalPrice,
+    numGuests,
+    status,
+    created_at,
+    cabins: { name, image }, // Assuming you joined with cabins table
+  } = booking;
 
   return (
-    // Max-width added to prevent stretching on large screens
-    <div className="flex flex-col md:flex-row bg-primary-900 border border-primary-800 max-w-4xl mx-auto overflow-hidden">
-      {/* Image Container: Fixed aspect ratio for consistency */}
-      <div className="relative h-64 md:h-auto md:flex-1">
+    <div className="flex border border-primary-800">
+      {/* 1. Cabin Image */}
+      <div className="relative h-32 aspect-square">
         <Image
           src={image}
-          fill
           alt={`Cabin ${name}`}
+          fill
           className="object-cover border-r border-primary-800"
         />
       </div>
 
-      <div className="flex-grow md:w-3/5">
-        <div className="pt-5 pb-4 px-7 bg-primary-950">
-          <h3 className="text-accent-500 font-semibold text-2xl mb-3">
-            Cabin {name}
+      {/* 2. Booking Info */}
+      <div className="flex-grow px-6 py-3 flex flex-col">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xl font-semibold">
+            {numNights} nights in Cabin {name}
           </h3>
+          {/* Status Badge */}
+          {isPast(parseISO(startDate)) ? (
+            <span className="bg-primary-800 text-primary-300 px-3 py-1 uppercase text-xs font-bold rounded-sm">
+              Past
+            </span>
+          ) : (
+            <span className="bg-green-800 text-green-200 px-3 py-1 uppercase text-xs font-bold rounded-sm">
+              Upcoming
+            </span>
+          )}
+        </div>
 
-          <div className="flex gap-3 items-center mb-2">
-            <UsersIcon className="h-5 w-5 text-primary-600" />
-            <p className="text-lg text-primary-200">
-              For up to <span className="font-bold">{maxCapacity}</span> guests
-            </p>
-          </div>
+        <p className="text-lg text-primary-300">
+          {format(parseISO(startDate), "EEE, MMM dd yyyy")} (
+          {isToday(parseISO(startDate))
+            ? "Today"
+            : formatDistanceFromNow(startDate)}
+          ) &mdash; {format(parseISO(endDate), "EEE, MMM dd yyyy")}
+        </p>
 
-          <p className="flex gap-3 justify-end items-baseline">
-            {discount > 0 ? (
-              <>
-                <span className="text-3xl font-[350]">
-                  ${regularPrice - discount}
-                </span>
-                <span className="line-through font-semibold text-primary-600">
-                  ${regularPrice}
-                </span>
-              </>
-            ) : (
-              <span className="text-3xl font-[350]">${regularPrice}</span>
-            )}
-            <span className="text-primary-200">/ night</span>
+        <div className="flex gap-5 mt-auto items-baseline">
+          <p className="text-xl font-semibold text-accent-500">${totalPrice}</p>
+          <p className="text-primary-300">&bull;</p>
+          <p className="text-lg text-primary-300">
+            {numGuests} guest{numGuests > 1 && "s"}
+          </p>
+          <p className="ml-auto text-sm text-primary-400">
+            Booked {format(parseISO(created_at), "MMM dd yyyy, p")}
           </p>
         </div>
+      </div>
 
-        <div className="bg-primary-950 border-t border-primary-800 text-right">
-          <Link
-            href={`/cabins/${id}`}
-            className="border-l border-primary-800 py-4 px-6 inline-block hover:bg-accent-600 transition-all hover:text-primary-900 uppercase text-xs tracking-widest font-semibold"
-          >
-            Details & reservation &rarr;
-          </Link>
-        </div>
+      {/* 3. Actions (Edit/Delete) */}
+      <div className="flex flex-col border-l border-primary-800 w-[100px]">
+        {!isPast(parseISO(startDate)) && (
+          <>
+            <Link
+              href={`/account/reservations/edit/${id}`}
+              className="group flex items-center gap-2 uppercase text-xs font-bold text-primary-300 border-b border-primary-800 flex-grow px-3 hover:bg-accent-600 transition-all hover:text-primary-900"
+            >
+              <PencilSquareIcon className="h-5 w-5 text-primary-600 group-hover:text-primary-800 transition-colors" />
+              <span className="mt-1">Edit</span>
+            </Link>
+            <DeleteReservation bookingId={id} onDelete={onDelete} />
+          </>
+        )}
       </div>
     </div>
   );
 }
 
-export default CabinCard;
+export default ReservationCard;
