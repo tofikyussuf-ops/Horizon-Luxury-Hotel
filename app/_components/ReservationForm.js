@@ -1,20 +1,31 @@
-// app/_components/ReservationForm.js
 "use client";
 
+import { differenceInDays } from "date-fns";
+import { useReservation } from "./ReservationContext";
 import { createBooking } from "@/app/_lib/actions";
+import SubmitButton from "./SubmitButton";
 
 function ReservationForm({ cabin, user }) {
+  const { range, resetRange } = useReservation();
   const { maxCapacity, regularPrice, discount, id } = cabin;
 
-  // This would usually come from a Context/State shared with a DatePicker
+  const startDate = range?.from;
+  const endDate = range?.to;
+
+  const numNights =
+    startDate && endDate ? differenceInDays(endDate, startDate) : 0;
+
+  const cabinPrice = numNights * (regularPrice - discount);
+
   const bookingData = {
-    startDate: new Date().toISOString(), // Placeholder
-    endDate: new Date().toISOString(), // Placeholder
-    cabinPrice: regularPrice - discount,
+    startDate,
+    endDate,
+    numNights,
+    cabinPrice,
     cabinId: id,
   };
 
-  // Bind the bookingData to the action
+  // We bind the extra data that isn't part of the form inputs
   const createBookingWithData = createBooking.bind(null, bookingData);
 
   return (
@@ -22,13 +33,21 @@ function ReservationForm({ cabin, user }) {
       <div className="bg-primary-800 text-primary-300 px-16 py-2 flex justify-between items-center">
         <p>Logged in as</p>
         <div className="flex gap-4 items-center">
-          <img src={user.image} className="h-8 rounded-full" alt={user.name} />
+          <img
+            referrerPolicy="no-referrer"
+            src={user.image}
+            className="h-8 rounded-full"
+            alt={user.name}
+          />
           <p>{user.name}</p>
         </div>
       </div>
 
       <form
-        action={createBookingWithData}
+        action={async (formData) => {
+          await createBookingWithData(formData);
+          resetRange(); // Modern touch: reset calendar after success
+        }}
         className="bg-primary-900 py-10 px-16 text-lg flex flex-col gap-5"
       >
         <div className="space-y-2">
@@ -51,18 +70,25 @@ function ReservationForm({ cabin, user }) {
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="observations">Anything we should know?</label>
+          <label htmlFor="observations">
+            Anything we should know about your stay?
+          </label>
           <textarea
             name="observations"
+            id="observations"
             className="px-5 py-3 bg-primary-200 text-primary-800 w-full shadow-sm rounded-sm"
             placeholder="Any pets, allergies, or special requests?"
           />
         </div>
 
         <div className="flex justify-end items-center gap-6">
-          <button className="bg-accent-500 px-8 py-4 text-primary-800 font-semibold hover:bg-accent-600 transition-all">
-            Reserve now
-          </button>
+          {!(startDate && endDate) ? (
+            <p className="text-primary-300 text-base">
+              Start by selecting dates
+            </p>
+          ) : (
+            <SubmitButton pendingLabel="Reserving...">Reserve now</SubmitButton>
+          )}
         </div>
       </form>
     </div>

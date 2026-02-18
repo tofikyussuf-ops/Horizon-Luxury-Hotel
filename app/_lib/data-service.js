@@ -61,20 +61,19 @@ export async function getGuest(email) {
 }
 
 export async function getBooking(id) {
-  const { data, error, count } = await supabase
+  const { data, error } = await supabase
     .from("bookings")
     .select("*")
     .eq("id", id)
-    .single();
+    .maybeSingle(); // 1. Use maybeSingle to prevent PGRST116 crash
 
   if (error) {
     console.error(error);
     throw new Error("Booking could not get loaded");
   }
 
-  return data;
+  return data; // 2. Ensure NO stray characters are after this semicolon
 }
-
 export async function getBookings(guestId) {
   const { data, error, count } = await supabase
     .from("bookings")
