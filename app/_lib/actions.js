@@ -1,5 +1,4 @@
 "use server";
-revalidatePath("/account/reservations");
 
 import { signIn, signOut } from "./auth";
 
