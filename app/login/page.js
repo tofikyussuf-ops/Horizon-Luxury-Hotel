@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import SignInButton from "@/app/_components/SignInButton";
 
 export const metadata = {
