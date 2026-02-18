@@ -61,3 +61,25 @@
   --rdp-background-color: var(--color-accent-600) !important;
   margin: 0 !important;
 }
+
+/* Modern Scrollbar Styling */
+@layer base {
+  ::-webkit-scrollbar {
+    width: 8px; /* Thinner width */
+    height: 8px; /* For horizontal scroll */
+  }
+
+  ::-webkit-scrollbar-track {
+    background: theme("colors.primary.950"); /* Match your dark background */
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: theme("colors.primary.800"); /* The bar itself */
+    border-radius: 10px;
+    border: 2px solid theme("colors.primary.950"); /* Creates "padding" effect */
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: theme("colors.accent.600"); /* Glows when hovered */
+  }
+}

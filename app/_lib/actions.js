@@ -1,8 +1,10 @@
 "use server";
+revalidatePath("/account/reservations");
 
 import { signIn, signOut } from "./auth";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { auth } from "./auth";
 import { supabase } from "./supabase"; // or your data-service update function
 
@@ -30,6 +32,31 @@ export async function updateGuest(formData) {
   revalidatePath("/account/profile");
 }
 
+export async function createBooking(bookingData, formData) {
+  const session = await auth();
+  if (!session) throw new Error("You must be logged in");
+
+  // We combine the data from the Date Selector and the Form inputs
+  const newBooking = {
+    ...bookingData,
+    guestId: session.user.guestId,
+    numGuests: Number(formData.get("numGuests")),
+    observations: formData.get("observations").slice(0, 1000),
+    extrasPrice: 0,
+    totalPrice: bookingData.cabinPrice, // Simplified for now
+    isPaid: false,
+    hasBreakfast: false,
+    status: "unconfirmed",
+  };
+
+  const { error } = await supabase.from("bookings").insert([newBooking]);
+
+  if (error) throw new Error("Booking could not be created");
+
+  revalidatePath(`/cabins/${newBooking.cabinId}`);
+  redirect("/cabins/thankyou");
+}
+
 export async function deleteBooking(bookingId) {
   const session = await auth();
   if (!session) throw new Error("You must be logged in");
@@ -42,8 +69,33 @@ export async function deleteBooking(bookingId) {
     .eq("guestId", session.user.guestId); // Double security check
 
   if (error) throw new Error("Booking could not be deleted");
+}
+export async function updateBooking(formData) {
+  const bookingId = Number(formData.get("bookingId"));
 
+  // 1. Authentication check
+  const session = await auth();
+  if (!session) throw new Error("You must be logged in");
+
+  // 2. Building update object from form data
+  const updateData = {
+    numGuests: Number(formData.get("numGuests")),
+    observations: formData.get("observations").slice(0, 1000),
+  };
+
+  // 3. Database operation with security check
+  const { error } = await supabase
+    .from("bookings")
+    .update(updateData)
+    .eq("id", bookingId)
+    .eq("guestId", session.user.guestId); // Crucial security!
+
+  if (error) throw new Error("Booking could not be updated");
+
+  // 4. Revalidate and Redirect
+  revalidatePath(`/account/reservations/edit/${bookingId}`);
   revalidatePath("/account/reservations");
+  redirect("/account/reservations");
 }
 export async function signInAction() {
   await signIn("google", { redirectTo: "/account" });
